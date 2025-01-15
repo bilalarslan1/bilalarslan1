@@ -65,6 +65,27 @@ const callOpenAI = async (messages: any[], model: string = "gpt-3.5-turbo") => {
   }
 };
 
+// Add this near the top of the file with other constants
+const COINGECKO_API_KEY = process.env.NEXT_PUBLIC_COINGECKO_API_KEY;
+
+if (!COINGECKO_API_KEY) {
+  console.error('CoinGecko API key is not set in environment variables');
+}
+
+// Helper function to create headers
+const createHeaders = (): HeadersInit => {
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  
+  if (COINGECKO_API_KEY) {
+    headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
+  }
+  
+  return headers;
+};
+
 // TradingView sembol önbellek sistemi
 let symbolCache: Map<string, string> = new Map();
 let lastCacheTime: number = 0;
@@ -673,27 +694,6 @@ const isRequestingCoinAnalysis = (message: string): boolean => {
   return coinAnalysisKeywords.some(keyword => 
     message.toLowerCase().includes(keyword.toLowerCase())
   );
-};
-
-// Add this near the top of the file with other constants
-const COINGECKO_API_KEY = process.env.NEXT_PUBLIC_COINGECKO_API_KEY;
-
-if (!COINGECKO_API_KEY) {
-  console.error('CoinGecko API key is not set in environment variables');
-}
-
-// Helper function to create headers
-const createHeaders = (): HeadersInit => {
-  const headers: Record<string, string> = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  };
-  
-  if (COINGECKO_API_KEY) {
-    headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
-  }
-  
-  return headers;
 };
 
 export default function AnalistMoai() {

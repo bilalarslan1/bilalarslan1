@@ -9,6 +9,28 @@ import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 const MOAI_TOKEN_ADDRESS = '2GbE1pq8GiwpHhdGWKUBLXJfBKvKLoNWe1E4KPtbED2M';
 const SOLANA_RPC_URL = 'https://solana-mainnet.rpc.extrnode.com/a6f9fc24-29e2-43fb-8f5c-de216933db71';
+const COINGECKO_API_KEY = process.env.NEXT_PUBLIC_COINGECKO_API_KEY;
+
+if (!COINGECKO_API_KEY) {
+  console.error('CoinGecko API key is not set in environment variables');
+}
+
+// Helper function to create headers
+const createHeaders = (): HeadersInit => {
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  
+  if (COINGECKO_API_KEY) {
+    headers['x-cg-pro-api-key'] = COINGECKO_API_KEY;
+  }
+  
+  return headers;
+};
+
+// TradingView sembol önbellek sistemi
+let symbolCache: Map<string, string> = new Map();
 
 const handleDisconnect = async (disconnect: () => Promise<void>) => {
   try {
