@@ -755,6 +755,18 @@ export default function AnalistMoai() {
       }
 
       try {
+        // Check if the wallet is being watched
+        const isWalletWatched = window.phantom?.solana?.isWatched || 
+                               (window as any).solflare?.isWatched || 
+                               window.solana?.isWatched;
+
+        if (isWalletWatched) {
+          setHasToken(false);
+          setIsWalletLoading(false);
+          hasCheckedBalance.current = true;
+          return;
+        }
+
         const connection = new Connection(SOLANA_RPC_URL);
         
         // Get all token accounts owned by the user
