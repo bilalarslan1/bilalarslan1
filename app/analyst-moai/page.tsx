@@ -755,10 +755,24 @@ export default function AnalistMoai() {
       }
 
       try {
-        // Check if the wallet is being watched
-        const isWalletWatched = window.phantom?.solana?.isWatched || 
-                               (window as any).solflare?.isWatched || 
-                               window.solana?.isWatched;
+        // Check if the wallet is being watched by attempting to sign a message
+        let isWalletWatched = true;
+        try {
+          const message = new TextEncoder().encode('MOAI Auth Check');
+          if (window.phantom?.solana) {
+            await window.phantom.solana.signMessage(message);
+            isWalletWatched = false;
+          } else if ((window as any).solflare) {
+            await (window as any).solflare.signMessage(message);
+            isWalletWatched = false;
+          } else if (window.solana) {
+            await window.solana.signMessage(message);
+            isWalletWatched = false;
+          }
+        } catch (signError) {
+          console.error('Wallet authorization check failed:', signError);
+          isWalletWatched = true;
+        }
 
         if (isWalletWatched) {
           setHasToken(false);
